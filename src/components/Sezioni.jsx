@@ -32,7 +32,7 @@ const Sezioni = () => {
                                     <Icon className="it-rounded-icon" color="primary" icon="it-folder" title="Sezione" />
                                     <div className="it-right-zone">
                                         <span className="text">{sezione.etichetta}</span>
-                                        <Badge color='primary'>0</Badge>
+                                        <Badge color='primary'>{sezione.numero_contenuti}</Badge>
                                     </div>
                                 </Link>
                             </li>
