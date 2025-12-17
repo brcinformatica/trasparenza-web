@@ -6,7 +6,7 @@ import { Icon, Badge } from "design-react-kit";
 
 const Sezioni = () => {
     // const apiUrl = process.env.REACT_APP_API_URL;
-    const apiUrl = 'https://api.brcnet.it';
+    const apiUrl = 'https://api.myscuola.it';
     const { codCli } = useParams();
 
     // header

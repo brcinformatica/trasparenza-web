@@ -7,7 +7,7 @@ import CookieConsent from "react-cookie-consent";
 
 const Layout = () => {
     // const apiUrl = process.env.REACT_APP_API_URL;
-    const apiUrl = 'https://api.brcnet.it';
+    const apiUrl = 'https://api.myscuola.it';
     const { codCli } = useParams();
 
     // header

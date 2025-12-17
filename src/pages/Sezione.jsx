@@ -17,7 +17,7 @@ import axios from "axios";
 import DOMPurify from "dompurify";
 
 const Sezione = () => {
-    const apiUrl = "https://api.brcnet.it";
+    const apiUrl = "https://api.myscuola.it";
     const { codCli, id } = useParams();
 
     const [collapseElementOpen, setCollapseElement] = useState("");
