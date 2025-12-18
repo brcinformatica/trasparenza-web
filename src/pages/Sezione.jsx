@@ -147,7 +147,7 @@ const Sezione = () => {
                                                                         </div>
 
                                                                         <div class="it-right-zone">
-                                                                            <a href={"https://cdn.myscuola.it/file/trasparenza/" + codCli + "/" + allegato.path} target="_blank" class="" data-focus-mouse="false">
+                                                                            <a href={"https://f003.backblazeb2.com/file/trasparenza/" + codCli + "/" + allegato.path} target="_blank" class="" data-focus-mouse="false">
                                                                                 <span class="text">{allegato.nome}</span>
                                                                             </a>
 
