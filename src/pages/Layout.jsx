@@ -88,13 +88,6 @@ const Layout = () => {
                         <span className='me-2'>Sito web istituzionale</span>
                         <Icon icon="it-external-link" size="sm" />
                     </HeaderBrand>
-                    <HeaderRightZone>
-                        <div className="it-access-top-wrapper">
-                            <Button color="primary" size="sm" href='https://cloud.myscuola.it/' target='_blank' rel='noopener noreferrer'>
-                                Accedi
-                            </Button>
-                        </div>
-                    </HeaderRightZone>
                 </HeaderContent>
             </Header>
 
