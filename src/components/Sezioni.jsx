@@ -16,7 +16,7 @@ const Sezioni = () => {
         axios.get(apiUrl + '/api/rest/v1/amt/sezioni/' + codCli).then(res => {
             if (res.data.success) setSezioni(res.data.payload);
         });
-    }, []);
+    }, [codCli]);
 
     if (!sezioni) return null;
 

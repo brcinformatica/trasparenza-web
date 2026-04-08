@@ -3,6 +3,7 @@ import {
     Container,
     Row,
     Icon,
+    Badge,
     Accordion,
     AccordionItem,
     AccordionHeader,
@@ -24,8 +25,14 @@ const Sezione = () => {
     const [sezione, setSezione] = useState(null);
     const [sottosezioni, setSottosezioni] = useState(null);
     const [contenuti, setContenuti] = useState(null);
+    const [errore, setErrore] = useState(false);
 
     useEffect(() => {
+        setSezione(null);
+        setSottosezioni(null);
+        setContenuti(null);
+        setErrore(false);
+
         const fetchData = async () => {
             try {
                 const [resSezione, resSottosezioni, resContenuti] = await Promise.all([
@@ -35,17 +42,25 @@ const Sezione = () => {
                 ]);
 
                 if (resSezione.data.success) setSezione(resSezione.data.payload);
-                if (resSottosezioni.data.success)
-                    setSottosezioni(resSottosezioni.data.payload);
-                if (resContenuti.data.success)
-                    setContenuti(resContenuti.data.payload);
+                else setErrore(true);
+                if (resSottosezioni.data.success) setSottosezioni(resSottosezioni.data.payload);
+                else setSottosezioni([]);
+                if (resContenuti.data.success) setContenuti(
+                    [...resContenuti.data.payload].sort((a, b) =>
+                        new Date(b.data_pubblicazione) - new Date(a.data_pubblicazione)
+                    )
+                );
+                else setContenuti([]);
             } catch (error) {
                 console.error("Errore nel caricamento dati:", error);
+                setErrore(true);
             }
         };
 
         fetchData();
     }, [codCli, id]);
+
+    if (errore) return <p>Errore nel caricamento della sezione. Riprovare più tardi.</p>;
 
     if (!sezione || !sottosezioni || !contenuti)
         return <p>Caricamento in corso...</p>;
@@ -61,6 +76,9 @@ const Sezione = () => {
             </Breadcrumb>
 
             <Row>
+                <Col lg="4">
+                    <Sezioni />
+                </Col>
                 <Col lg="8">
                     <Container>
                         <h1 className="fs-1">{sezione.etichetta}</h1>
@@ -85,6 +103,7 @@ const Sezione = () => {
 
                                             <div className="it-right-zone">
                                                 <span className="text">{sottosezione.etichetta}</span>
+                                                <Badge color='primary'>{sottosezione.numero_contenuti}</Badge>
                                             </div>
                                         </Link>
                                     </li>
@@ -121,13 +140,11 @@ const Sezione = () => {
                                                 <li>
                                                     Pubblicato il <b>{contenuto.data_pubblicazione}</b>
                                                 </li>
-                                                <li>
-                                                    Modificato il{" "}
-                                                    <b>
-                                                        {contenuto.data_modifica ||
-                                                            contenuto.data_pubblicazione}
-                                                    </b>
-                                                </li>
+                                                {contenuto.data_modifica && contenuto.data_modifica !== contenuto.data_pubblicazione && (
+                                                    <li>
+                                                        Modificato il <b>{contenuto.data_modifica}</b>
+                                                    </li>
+                                                )}
                                                 <li>
                                                     Archiviazione il{" "}
                                                     <b>{contenuto.data_archiviazione}</b>
@@ -146,25 +163,10 @@ const Sezione = () => {
                                                                             <Icon color="primary" icon="it-file" title="Allegato" />
                                                                         </div>
 
-                                                                        <div class="it-right-zone">
-                                                                            <a href={"https://f003.backblazeb2.com/file/trasparenza/" + codCli + "/" + allegato.path} target="_blank" class="" data-focus-mouse="false">
-                                                                                <span class="text">{allegato.nome}</span>
+                                                                        <div className="it-right-zone">
+                                                                            <a href={"https://f003.backblazeb2.com/file/trasparenza/" + codCli + "/" + allegato.path} target="_blank" rel="noopener noreferrer" data-focus-mouse="false">
+                                                                                <span className="text">{allegato.nome}</span>
                                                                             </a>
-
-                                                                            {/* <span class="it-multiple">
-                                                                                <a href="javascript:showlistversion(1);" aria-label="Versioni del file" class="" data-focus-mouse="false">
-                                                                                    <svg class="icon" data-bs-toggle="tooltip" title="Versioni">
-                                                                                        <use href="/assets/bootstrap-italia/svg/sprites.svg#it-restore"></use>
-                                                                                    </svg>
-
-                                                                                    1                                                                                </a>
-
-                                                                                <a href="javascript:showpermalink('3d9312e7-3665-47c6-ad23-cdcea4c1cdf6', 2);" aria-label="Permalink">
-                                                                                    <svg class="icon" data-bs-toggle="tooltip" title="Permalink">
-                                                                                        <use href="/assets/bootstrap-italia/svg/sprites.svg#it-link"></use>
-                                                                                    </svg>
-                                                                                </a>
-                                                                            </span> */}
                                                                         </div>
                                                                     </div>
                                                                 </li>
@@ -182,9 +184,6 @@ const Sezione = () => {
                             })}
                         </Accordion>
                     </Container>
-                </Col>
-                <Col lg="4">
-                    <Sezioni />
                 </Col>
             </Row>
         </Container>

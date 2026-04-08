@@ -13,17 +13,28 @@ const Layout = () => {
     // header
     const [isOpenSearch, toggleModalSearch] = useState(false);
     const [istituto, setIstituto] = useState(null);
+    const [errore, setErrore] = useState(false);
 
     useEffect(() => {
-        axios.get(apiUrl + '/api/rest/v1/istituti/anagrafica/' + codCli).then(res => {
-            if (res.data.success) setIstituto(res.data.payload);
-        });
-    }, []);
-
-    // cerca
-    const [descrizione, setDescrizione] = useState(null);
+        setIstituto(null);
+        setErrore(false);
+        axios.get(apiUrl + '/api/rest/v1/istituti/anagrafica/' + codCli)
+            .then(res => {
+                if (res.data.success) setIstituto(res.data.payload);
+                else setErrore(true);
+            })
+            .catch(() => setErrore(true));
+    }, [codCli]);
 
     // caricamento
+    if (errore) return (
+        <Container className='my-5'>
+            <div className='w-100 d-flex flex-column align-items-center'>
+                <p className='fs-4'>Impossibile caricare i dati dell&apos;istituto. Verificare il codice scuola o riprovare più tardi.</p>
+            </div>
+        </Container>
+    );
+
     if (!istituto) return (
         <Container className='my-5'>
             <div className='w-100 d-flex flex-column align-items-center'>
@@ -69,18 +80,14 @@ const Layout = () => {
                 </ModalHeader>
                 <ModalBody>
                     <FormGroup>
-                        <Input type='text' id='nome-atto' label='Cerca per nome atto' onChange={(e) => setDescrizione(e.target.value)} />
+                        <Input type='text' id='nome-atto' label='Cerca per nome atto' />
                     </FormGroup>
                 </ModalBody>
                 <ModalFooter>
                     <Button color='secondary' onClick={() => toggleModalSearch(!isOpenSearch)}>
                         Chiudi
                     </Button>
-                    <Button color='primary' onClick={() => {
-                        toggleModalSearch(!isOpenSearch);
-                        console.log(descrizione);
-                        // getAtti(isArchivio, null, null, null, null, descrizione);
-                    }}>
+                    <Button color='primary' onClick={() => toggleModalSearch(!isOpenSearch)}>
                         Cerca
                     </Button>
                 </ModalFooter>
