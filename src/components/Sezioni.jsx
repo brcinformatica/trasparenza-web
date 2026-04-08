@@ -29,7 +29,7 @@ const Sezioni = () => {
                         return (
                             <li key={index}>
                                 <Link to={'/' + codCli + '/sezione/' + sezione.id} className="list-item">
-                                    <Icon className="it-rounded-icon" color="primary" icon="it-folder" title="Sezione" />
+                                    {/* <Icon className="it-rounded-icon" color="primary" icon="it-folder" title="Sezione" /> */}
                                     <div className="it-right-zone">
                                         <span className="text">{sezione.etichetta}</span>
                                         <Badge color='primary'>{sezione.numero_contenuti}</Badge>

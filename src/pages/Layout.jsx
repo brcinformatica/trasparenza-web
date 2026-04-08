@@ -2,7 +2,7 @@ import logo from '../assets/logo-repubblica-italiana.svg';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
-import { Header, HeaderContent, HeaderBrand, Icon, HeaderRightZone, Button, HeaderSearch, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Container, Row, Col, Spinner } from "design-react-kit";
+import { Header, HeaderContent, HeaderBrand, Icon, HeaderRightZone, Button, HeaderSearch, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Container, Row, Col, Spinner, Badge } from "design-react-kit";
 import CookieConsent from "react-cookie-consent";
 
 const Layout = () => {
@@ -14,6 +14,42 @@ const Layout = () => {
     const [isOpenSearch, toggleModalSearch] = useState(false);
     const [istituto, setIstituto] = useState(null);
     const [errore, setErrore] = useState(false);
+
+    // ricerca
+    const [query, setQuery] = useState('');
+    const [risultati, setRisultati] = useState(null);
+    const [totale, setTotale] = useState(0);
+    const [cercando, setCercando] = useState(false);
+    const [queryEseguita, setQueryEseguita] = useState('');
+
+    const apriRicerca = () => {
+        setQuery('');
+        setRisultati(null);
+        setQueryEseguita('');
+        toggleModalSearch(true);
+    };
+
+    const eseguiRicerca = async () => {
+        if (query.trim().length < 3) return;
+        setCercando(true);
+        setRisultati(null);
+        setQueryEseguita(query.trim());
+        try {
+            const res = await axios.get(`${apiUrl}/api/rest/v1/amt/cerca/${codCli}?q=${encodeURIComponent(query.trim())}`);
+            if (res.data.success) {
+                setRisultati(res.data.payload);
+                setTotale(res.data.totale);
+            } else {
+                setRisultati([]);
+                setTotale(0);
+            }
+        } catch {
+            setRisultati([]);
+            setTotale(0);
+        } finally {
+            setCercando(false);
+        }
+    };
 
     useEffect(() => {
         setIstituto(null);
@@ -69,26 +105,71 @@ const Layout = () => {
                         <h3>AMMINISTRAZIONE TRASPARENTE</h3>
                     </HeaderBrand>
                     <HeaderRightZone>
-                        <HeaderSearch iconName="it-search" label="Cerca" onClick={() => toggleModalSearch(!isOpenSearch)} />
+                        <HeaderSearch iconName="it-search" label="Cerca" onClick={apriRicerca} />
                     </HeaderRightZone>
                 </HeaderContent>
             </Header>
 
-            <Modal isOpen={isOpenSearch} toggle={() => toggleModalSearch(!isOpenSearch)} labelledBy='modalRicerca'>
-                <ModalHeader toggle={() => toggleModalSearch(!isOpenSearch)} id='modalRicerca'>
+            <Modal isOpen={isOpenSearch} toggle={() => toggleModalSearch(false)} labelledBy='modalRicerca' size='lg'>
+                <ModalHeader toggle={() => toggleModalSearch(false)} id='modalRicerca'>
                     Cerca
                 </ModalHeader>
                 <ModalBody>
-                    <FormGroup>
-                        <Input type='text' id='nome-atto' label='Cerca per nome atto' />
+                    <FormGroup className='d-flex gap-2 align-items-end'>
+                        <div className='flex-grow-1'>
+                            <Input
+                                type='text'
+                                id='cerca-atto'
+                                label='Inserisci almeno 3 caratteri'
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && eseguiRicerca()}
+                            />
+                        </div>
+                        <Button color='primary' onClick={eseguiRicerca} disabled={query.trim().length < 3 || cercando}>
+                            {cercando ? <Spinner small active /> : 'Cerca'}
+                        </Button>
                     </FormGroup>
+
+                    {queryEseguita && (
+                        <p className='text-muted mb-3'>
+                            {totale} risultat{totale === 1 ? 'o' : 'i'} per <strong>"{queryEseguita}"</strong>
+                        </p>
+                    )}
+
+                    {risultati && risultati.length === 0 && (
+                        <p>Nessun risultato trovato.</p>
+                    )}
+
+                    {risultati && risultati.length > 0 && (
+                        <ul className='it-list border-top'>
+                            {risultati.map((r) => (
+                                <li key={r.id}>
+                                    <Link
+                                        to={`/${codCli}/sezione/${r.sezione_id}#contenuto-${r.id}`}
+                                        className='list-item py-3'
+                                        onClick={() => toggleModalSearch(false)}
+                                    >
+                                        <div className='it-right-zone d-flex flex-column align-items-start gap-1'>
+                                            <span className='text fw-bold'>{r.titolo}</span>
+                                            <small className='text-muted'>
+                                                {r.sezione_genitore_etichetta
+                                                    ? `${r.sezione_genitore_etichetta} › ${r.sezione_etichetta}`
+                                                    : r.sezione_etichetta}
+                                            </small>
+                                            <Badge color='primary' className='mt-1'>
+                                                {new Date(r.data_pubblicazione).toLocaleDateString('it-IT')}
+                                            </Badge>
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
                 </ModalBody>
                 <ModalFooter>
-                    <Button color='secondary' onClick={() => toggleModalSearch(!isOpenSearch)}>
+                    <Button color='secondary' onClick={() => toggleModalSearch(false)}>
                         Chiudi
-                    </Button>
-                    <Button color='primary' onClick={() => toggleModalSearch(!isOpenSearch)}>
-                        Cerca
                     </Button>
                 </ModalFooter>
             </Modal>
