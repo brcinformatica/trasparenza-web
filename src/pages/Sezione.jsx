@@ -14,9 +14,10 @@ import {
 } from "design-react-kit";
 import Sezioni from "../components/Sezioni";
 import { Link, useParams, useLocation, useSearchParams } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import DOMPurify from "dompurify";
+import { IstitutoContext } from "./Layout";
 
 const PER_PAGINA = 10;
 
@@ -35,7 +36,7 @@ const Sezione = () => {
     const [paginazione, setPaginazione] = useState(null);
     const [errore, setErrore] = useState(false);
     const [linkCopiato, setLinkCopiato] = useState(null);
-    const [cfIstituto, setCfIstituto] = useState(null);
+    const istituto = useContext(IstitutoContext);
     const hasScrolled = useRef(false);
     const contenutiRef = useRef(null);
 
@@ -61,16 +62,6 @@ const Sezione = () => {
         };
 
         fetchStruttura();
-    }, [codCli, id]);
-
-    // Carica CF istituto per le sezioni BDNCP (124, 125)
-    useEffect(() => {
-        if (id !== '124' && id !== '125') return;
-        if (cfIstituto) return;
-
-        axios.get(`${apiUrl}/api/rest/v1/istituti/anagrafica/${codCli}`)
-            .then(res => { if (res.data.success) setCfIstituto(res.data.payload.cf); })
-            .catch(() => {});
     }, [codCli, id]);
 
     // Carica contenuti quando cambia sezione o pagina
@@ -156,16 +147,16 @@ const Sezione = () => {
                 <Col lg="8">
                     <Container>
                         <h1 className="fs-1">{sezione.etichetta}</h1>
-                        <p>{sezione.descrizione}</p>
+                        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(sezione.descrizione) }} />
 
-                        {(id === '124' || id === '125') && cfIstituto && (
+                        {(id === '124' || id === '125') && istituto.cf && (
                             <div className="mb-3">
                                 <Button
                                     color='primary'
                                     size='sm'
                                     outline
                                     tag='a'
-                                    href={`https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa=${cfIstituto}`}
+                                    href={`https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa=${istituto.cf}`}
                                     target='_blank'
                                     rel='noopener noreferrer'
                                     icon

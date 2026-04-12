@@ -1,7 +1,9 @@
 import logo from '../assets/logo-repubblica-italiana.svg';
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { Link, Outlet, useParams } from "react-router-dom";
+
+export const IstitutoContext = createContext(null);
 import { Header, HeaderContent, HeaderBrand, Icon, HeaderRightZone, Button, HeaderSearch, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input, Container, Row, Col, Spinner, Badge } from "design-react-kit";
 import CookieConsent from "react-cookie-consent";
 
@@ -167,7 +169,9 @@ const Layout = () => {
                 </ModalFooter>
             </Modal>
 
-            <Outlet />
+            <IstitutoContext.Provider value={istituto}>
+                <Outlet />
+            </IstitutoContext.Provider>
 
             <footer className="it-footer">
                 <div className="it-footer-main">
