@@ -35,6 +35,7 @@ const Sezione = () => {
     const [paginazione, setPaginazione] = useState(null);
     const [errore, setErrore] = useState(false);
     const [linkCopiato, setLinkCopiato] = useState(null);
+    const [cfIstituto, setCfIstituto] = useState(null);
     const hasScrolled = useRef(false);
     const contenutiRef = useRef(null);
 
@@ -60,6 +61,16 @@ const Sezione = () => {
         };
 
         fetchStruttura();
+    }, [codCli, id]);
+
+    // Carica CF istituto per le sezioni BDNCP (124, 125)
+    useEffect(() => {
+        if (id !== '124' && id !== '125') return;
+        if (cfIstituto) return;
+
+        axios.get(`${apiUrl}/api/rest/v1/istituti/anagrafica/${codCli}`)
+            .then(res => { if (res.data.success) setCfIstituto(res.data.payload.cf); })
+            .catch(() => {});
     }, [codCli, id]);
 
     // Carica contenuti quando cambia sezione o pagina
@@ -146,6 +157,24 @@ const Sezione = () => {
                     <Container>
                         <h1 className="fs-1">{sezione.etichetta}</h1>
                         <p>{sezione.descrizione}</p>
+
+                        {(id === '124' || id === '125') && cfIstituto && (
+                            <div className="mb-3">
+                                <Button
+                                    color='primary'
+                                    size='sm'
+                                    outline
+                                    tag='a'
+                                    href={`https://dati.anticorruzione.it/superset/dashboard/dettaglio_sa/?sa=${cfIstituto}`}
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    icon
+                                >
+                                    <Icon icon='it-external-link' size='sm' />
+                                    Stazione appaltante su BDNCP
+                                </Button>
+                            </div>
+                        )}
 
                         {sottosezioni.length > 0 && (
                             <>
@@ -250,7 +279,22 @@ const Sezione = () => {
                                                 <p>Nessun allegato disponibile.</p>
                                             )}
 
-                                            <div className="mt-3">
+                                            <div className="mt-3 d-flex gap-2 flex-wrap">
+                                                {id === '125' && contenuto.cig && (
+                                                    <Button
+                                                        color='primary'
+                                                        size='sm'
+                                                        outline
+                                                        tag='a'
+                                                        href={`https://dettaglio-cig.anticorruzione.it/cig/${contenuto.cig}`}
+                                                        target='_blank'
+                                                        rel='noopener noreferrer'
+                                                        icon
+                                                    >
+                                                        <Icon icon='it-external-link' size='sm' />
+                                                        CIG {contenuto.cig}
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     color='secondary'
                                                     size='sm'
