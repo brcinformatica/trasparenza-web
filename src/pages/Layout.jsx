@@ -95,7 +95,7 @@ const Layout = () => {
                 <HeaderContent>
                     <HeaderBrand iconAlt="it code circle icon" iconName={logo}>
                         <h2>{istituto.intestazione.toUpperCase()}</h2>
-                        <h3>AMMINISTRAZIONE TRASPARENTE</h3>
+                        <h3>Amministrazione Trasparente D.Lgs. 33/2013</h3>
                     </HeaderBrand>
                     <HeaderRightZone>
                         <HeaderSearch iconName="it-search" label="Cerca" onClick={apriRicerca} />
@@ -178,7 +178,7 @@ const Layout = () => {
                                     <img height={'67px'} src={logo} alt="Stemma Repubblica Italiana" className='me-3' />
                                     <div className="it-brand-text">
                                         <h4 className='fs-4 m-0 p-0'>{istituto.intestazione.toUpperCase()}</h4>
-                                        <h6 className='fs-6 fw-normal m-0 p-0'>AMMINISTRAZIONE TRASPARENTE</h6>
+                                        <h6 className='fs-6 fw-normal m-0 p-0'>Amministrazione Trasparente D.Lgs. 33/2013</h6>
                                     </div>
                                 </div>
                             </Col>

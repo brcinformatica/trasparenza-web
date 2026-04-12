@@ -4,7 +4,11 @@
       "Bash(npm audit:*)",
       "Bash(npm run:*)",
       "Bash(curl -s \"https://api.myscuola.it/api/rest/v1/amt/contenuti/pdis026002/44\")",
-      "Bash(python -m json.tool)"
+      "Bash(python -m json.tool)",
+      "WebFetch(domain:italia.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebSearch",
+      "WebFetch(domain:raw.githubusercontent.com)"
     ]
   }
 }
